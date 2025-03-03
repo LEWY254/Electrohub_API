@@ -1,54 +1,86 @@
+import { ethers as ether } from "ethers";
+import fs from "fs";
 
-import {ethers as ether} from "ethers"
-import fs from "fs"
-const electroneum_RPC="https://rpc.electroneum.com"
-const ankr_rpc="https://rpc.ankr.com/electroneum"
+const electroneum_RPC = "https://rpc.electroneum.com";
+const ankr_rpc = "https://rpc.ankr.com/electroneum";
 
-var provider=ether.provider.JsonRpcProvider(electroneum_RPC)
+const provider = new ether.providers.JsonRpcProvider(electroneum_RPC);
 
-function importWallet(filePath){
-    
+function importWallet(filePath) {
+    // Implementation needed
 }
-function createWallet(keyPhrase="",provider=provider){
-    if (keyPhrase){
-        const wallet=ether.Wallet.createRandom().connect(provider)
-        wallet.mnemonic.phrase=keyPhrase
-        return wallet
+
+function createWallet(keyPhrase = "", provider = provider) {
+    if (keyPhrase) {
+        const wallet = ether.Wallet.fromMnemonic(keyPhrase).connect(provider);
+        return wallet;
     }
-    const wallet=ether.Wallet.createRandom().connect(provider)
-    return wallet
+    const wallet = ether.Wallet.createRandom().connect(provider);
+    return wallet;
 }
 
-async function sendETN(sender,receiver,transaction_amount){
-    let success=false
-    let error=null
-if (sender && receiver && amount){
-    try{
-        let gas_fees=await provider.getGasPrice()
-        if(sender.amount>=transaction_amount+gas_fees){
-            const tx={
-                to:receiver,
-                value:ether.utils.parseEther(transaction_amount)
+async function sendETN(sender, receiver, transaction_amount) {
+    let success = false;
+    let error = null;
+    if (sender && receiver && transaction_amount) {
+        try {
+            let gas_fees = await provider.getGasPrice();
+            let sender_balance = await sender.getBalance();
+            if (sender_balance.gte(ether.utils.parseEther(transaction_amount).add(gas_fees))) {
+                const tx = {
+                    to: receiver,
+                    value: ether.utils.parseEther(transaction_amount)
+                };
+                const transaction = await sender.sendTransaction(tx);
+                const transaction_hash = transaction.hash;
+                return {
+                    message: "Transaction successful",
+                    success: true,
+                    hash: transaction_hash,
+                    error: error
+                };
+            } else {
+                return {
+                    message: "Insufficient balance",
+                    success: false,
+                    error: "Insufficient balance"
+                };
             }
-            const transaction=await sender.sendTransaction(tx)
-            const transaction_hash=await transaction.transaction_hash
-            return {
-                message:"Transaction successful",
-                success:true,
-                hash:transaction_hash,
-                error:error
-            }
+        } catch (e) {
+            error = e;
         }
-    }catch(e){
-        error=e
     }
-   
-}
-}
-
-async function checkBalance(wallet){
-const balance=await provider.getBalance(wallet.address)
-return ether.utils.formatEther(balance)
+    return {
+        message: "Transaction failed",
+        success: false,
+        error: error
+    };
 }
 
-module.exports={ether,electroneum_RPC,ankr_rpc}
+async function checkBalance(wallet) {
+    try {
+        const balance = await provider.getBalance(wallet.address);
+        return ether.utils.formatEther(balance);
+    } catch (error) {
+        return `Error: ${error.message}`;
+    }
+}
+
+async function getTransactionHistory(wallet) {
+    try {
+        const history = await provider.getHistory(wallet.address);
+        const transactionsWithTimestamps = await Promise.all(history.map(async (tx) => {
+            const block = await provider.getBlock(tx.blockNumber);
+            return {
+                ...tx,
+                timestamp: new Date(block.timestamp * 1000).toISOString()
+            };
+        }));
+        return transactionsWithTimestamps;
+    } catch (error) {
+        console.error('Error getting transaction history:', error);
+        return `Error: ${error.message}`;
+    }
+}
+
+module.exports = { ether, electroneum_RPC, ankr_rpc, importWallet, createWallet, sendETN, checkBalance, getTransactionHistory };
