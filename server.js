@@ -1,7 +1,10 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import { createWallet, checkBalance, sendETN, getTransactionHistory, provider } from './utility.js';
 import AfricasTalking from 'africastalking';
+
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -9,8 +12,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const africasTalking = AfricasTalking({
-    apiKey: 'YOUR_API_KEY',
-    username: 'YOUR_USERNAME'
+    apiKey: process.env.API_KEY,
+    username: process.env.USERNAME
 });
 
 const sms = africasTalking.SMS;
