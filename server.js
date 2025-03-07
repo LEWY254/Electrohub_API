@@ -1,13 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { ether,createWallet, checkBalance, sendETN, getTransactionHistory } from './utility.js';
+import { createWallet, checkBalance, sendETN, getTransactionHistory, provider } from './utility.js';
 import AfricasTalking from 'africastalking';
-
-
-const electroneum_RPC = "https://rpc.electroneum.com";
-const ankr_rpc = "https://rpc.ankr.com/electroneum";
-
-const provider = new ether.JsonRpcProvider(electroneum_RPC);
 const app = express();
 const port = process.env.PORT || 3000;
 
