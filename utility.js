@@ -10,12 +10,12 @@ function importWallet(filePath) {
     // Implementation needed
 }
 
-function createWallet(keyPhrase = "", provider = provider) {
+function createWallet(keyPhrase = "", providerInstance = provider) {
     if (keyPhrase) {
-        const wallet = ether.Wallet.fromMnemonic(keyPhrase).connect(provider);
+        const wallet = ether.Wallet.fromPhrase(keyPhrase, providerInstance);
         return wallet;
     }
-    const wallet = ether.Wallet.createRandom().connect(provider);
+    const wallet = ether.Wallet.createRandom(providerInstance);
     return wallet;
 }
 
