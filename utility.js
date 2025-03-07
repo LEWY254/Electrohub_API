@@ -83,4 +83,4 @@ async function getTransactionHistory(wallet) {
     }
 }
 
-module.exports = { ether, electroneum_RPC, ankr_rpc, importWallet, createWallet, sendETN, checkBalance, getTransactionHistory };
+module.exports = { checkBalance, ether, electroneum_RPC, ankr_rpc, importWallet, createWallet, sendETN,getTransactionHistory };

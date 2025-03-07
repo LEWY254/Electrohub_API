@@ -1,0 +1,19 @@
+modules = ["nodejs-20"]
+run = "node index.js"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "node index.js"]
+
+[workflows]
+
+[[workflows.workflow]]
+name = "Run server"
+mode = "sequential"
+author = 30366284
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm start"
