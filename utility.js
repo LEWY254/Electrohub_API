@@ -4,7 +4,7 @@ import fs from "fs";
 const electroneum_RPC = "https://rpc.electroneum.com";
 const ankr_rpc = "https://rpc.ankr.com/electroneum";
 
-const provider = new ether.providers.JsonRpcProvider(electroneum_RPC);
+const provider = new ether.JsonRpcProvider(electroneum_RPC);
 
 function importWallet(filePath) {
     // Implementation needed
